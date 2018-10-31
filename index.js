@@ -1,8 +1,5 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const webhookId = process.env.WEBHOOK_ID;
-const webhookToken = process.env.WEBHOOK_TOKEN;
-const raceControlTextChannel = new Discord.WebhookClient(webhookId, webhookToken);
 
 client.on('ready', () => {
 	console.log('Ready!');
@@ -13,8 +10,23 @@ client.on('message', message => {
 
 		// Race Control notifications
 		if (message.content.startsWith(`${process.env.PREFIX}rc`)) {
-			raceControlTextChannel.send(`@here ${message.author} sent a message: \n\n${message.content}`);
+			const raceControlChannel = client.channels.find(item => item.name === process.env.RACE_CONTROL_CHANNEL_NAME)
+			raceControlChannel.send(`@here ${message.author} sent a message: \n\n${message.content}`);
 			message.channel.send('Your message has been sent to Race Control. They will reach out to you shortly if needed.');
+		}
+
+		// Appeal notifications
+		else if (message.content.startsWith(`${process.env.PREFIX}appeal`)) {
+			const appealsChannel = client.channels.find(item => item.name === process.env.APPEALS_CHANNEL_NAME)
+			appealsChannel.send(`@here ${message.author} sent a message: \n\n${message.content}`);
+			message.channel.send('Your appeal has been sent successfully. Race Control will review your appeal ASAP and will contact you with the outcome.');
+		}
+
+		// Talk notifications
+		else if (message.content.startsWith(`${process.env.PREFIX}talk`)) {
+			const waitingroomChannel = client.channels.find(item => item.name === process.env.WAITING_ROOM_CHANNEL_NAME)
+			waitingroomChannel.send(`@here ${message.author} needs to talk with Race Control: \n\n${message.content}`);
+			message.channel.send('Please make sure you are in the Waiting Room voice channel and Race Control will be with you shortly');
 		}
 
 		// Team text notifications by car number(e.g !289)
