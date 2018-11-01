@@ -8,8 +8,16 @@ client.on('ready', () => {
 client.on('message', message => {
 	if (message.content.startsWith(`${process.env.PREFIX}`)) {
 
+		if (message.content.startsWith(`${process.env.PREFIX}help`)) {
+			message.channel.send(`Here is a list of commands for you to use:
+\t\`!appeal [message]\` - Use for sending in an appeal.
+\t\`!talk\` - Use if you need to talk with Race Control.
+\t\`!rc [message]\` - Use for all other items such as requesting a tow or clearing black flags.
+\t\`!help\` - Use to bring up a list of commands.`);
+		}
+
 		// Race Control notifications
-		if (message.content.startsWith(`${process.env.PREFIX}rc`)) {
+		else if (message.content.startsWith(`${process.env.PREFIX}rc`)) {
 			const raceControlChannel = client.channels.find(item => item.name === process.env.RACE_CONTROL_CHANNEL_NAME)
 			raceControlChannel.send(`@here ${message.author} sent a message: \n\n${message.content}`);
 			message.channel.send('Your message has been sent to Race Control. They will reach out to you shortly if needed.');
