@@ -47,7 +47,7 @@ client.on('message', message => {
 			} else {
 				const categoryId = voiceChannel.parentID;
 				const textChannel = client.channels.find(item => item.parentID === categoryId && item.name === 'text');
-				textChannel.send((`@here Race Control sent a message: \n\n${message.content}`))
+				textChannel.send((`Race Control sent a message: \n\n${message.content}`))
 			}
 		}
 	}
