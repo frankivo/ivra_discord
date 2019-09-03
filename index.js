@@ -166,7 +166,7 @@ client.on('message', message => {
 
 		if (message.content.startsWith(`${process.env.PREFIX}help`)) {
 			message.channel.send(`Here is a list of commands for you to use:
-\t\`!talk\` - Use if you need to talk with Race Control.
+\t\`!rc [message]\` - Use if you need to talk with Race Control.
 \t\`!help\` - Use to bring up a list of commands.
 \t\`!sheet\` - Use to bring up the Race Control Decision Sheet link.
 \t\`!protest\` - Use to log a new protest.
