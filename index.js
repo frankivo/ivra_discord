@@ -1,13 +1,14 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
-function sendProtestToRaceControl(author, channel, carsInvolved, timeStamp, reason) {
+function sendProtestToRaceControl(author, channel, sourceCar, carsInvolved, timeStamp, reason) {
 	const raceControlChannel = client.channels.find(item => item.name === process.env.RACE_CONTROL_CHANNEL_NAME)
 	const richEmbedMessage = new Discord.RichEmbed();
 	richEmbedMessage
 		.setColor("#0000FF")
 		.setTitle("New protest")
 		.setDescription(`${author} submitted a protest in #${channel}`)
+		.addField("Origin Car", sourceCar, true)
 		.addField("Cars involved", carsInvolved, true)
 		.addField("Timestamp", timeStamp, true)
 		.addField("Description", reason)
@@ -47,7 +48,7 @@ function sendBFToRaceControl(message, author, channel, carsInvolved) {
 
 }
 
-function confirmProtestSubmitted(message, carsInvolved, timeStamp, reason) {
+function confirmProtestSubmitted(message, sourceCar, carsInvolved, timeStamp, reason) {
 	const protestConfirmation = new Discord.RichEmbed();
 	protestConfirmation
 		.setColor("#E56A02")
@@ -55,6 +56,7 @@ function confirmProtestSubmitted(message, carsInvolved, timeStamp, reason) {
 		.setDescription(`Thank you ${message.author}, your protest is successfully submitted. Please check the protest sheet for the status of your protest.  Thank you to Neil Hekkens and NEO for allowing us to us the protest portion of the Race Control Bot.`)
 		.addBlankField()
 		.addField("Protest details", "Below you can find the information you submitted:")
+		.addField("Origin Car", sourceCar, true)
 		.addField("Cars involved", carsInvolved, true)
 		.addField("Timestamp", timeStamp, true)
 		.addField("Description", reason)
@@ -110,49 +112,63 @@ function initiateBF(message) {
 function initiateProtest(message) {
 	let initiator = message.author;
 	let channel = message.channel.name;
+	let sourceCar = undefined;
 	let carsInvolved = undefined;
 	let timeStamp = undefined;
 	let reason = undefined;
 
 	message.channel
-		.send("Please answer the following questions: \n What is your car number and number(s) of the other car(s) involved??")
+		.send("Please answer the following questions: \n\n What is your car number?")
 		.then(() => {
 			const filter = m => message.author.id === m.author.id;
 
 			message.channel
 				.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
 				.then(collected => {
-					carsInvolved = collected.first().content;
+					sourceCar = collected.first().content;
 
 					message.channel
-						.send("What is the iRacing Time Stamp (HR:MM:SS)")
+						.send("What are the car numbers of other cars involved?")
 						.then(() => {
 							const filter = m => message.author.id === m.author.id;
 
 							message.channel
 								.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
 								.then(collected => {
-									timeStamp = collected.first().content;
+									carsInvolved = collected.first().content;
 
 									message.channel
-										.send("Please provide a short description of the incident:")
+										.send("What is the iRacing Time Stamp (HR:MM:SS)")
 										.then(() => {
 											const filter = m => message.author.id === m.author.id;
 
 											message.channel
 												.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
 												.then(collected => {
-													reason = collected.first().content;
-													sendProtestToRaceControl(initiator, channel, carsInvolved, timeStamp, reason);
-													confirmProtestSubmitted(message, carsInvolved, timeStamp, reason);
+													timeStamp = collected.first().content;
+
+													message.channel
+														.send("Please provide a short description of the incident:")
+														.then(() => {
+															const filter = m => message.author.id === m.author.id;
+
+															message.channel
+																.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
+																.then(collected => {
+																	reason = collected.first().content;
+																	sendProtestToRaceControl(initiator, channel, sourceCar, carsInvolved, timeStamp, reason);
+																	confirmProtestSubmitted(message, sourceCar, carsInvolved, timeStamp, reason);
+																})
+																.catch(collected => returnErrorMessage(message));
+														})
 												})
 												.catch(collected => returnErrorMessage(message));
 										})
 								})
 								.catch(collected => returnErrorMessage(message));
-						})
-				})
-				.catch(collected => returnErrorMessage(message));
+							})
+					})
+					.catch(collected => returnErrorMessage(message));
 		});
 }
 
