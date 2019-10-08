@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 
 function sendProtestToRaceControl(author, channel, sourceCar, carsInvolved, timeStamp, reason) {
-	const raceControlChannel = client.channels.find(item => item.name === process.env.RACE_CONTROL_CHANNEL_NAME)
+	const raceControlChannel = client.channels.find(item => item.name === process.env.PROTEST_CHANNEL_NAME)
 	const richEmbedMessage = new Discord.RichEmbed();
 	richEmbedMessage
 		.setColor("#0000FF")
@@ -34,7 +34,7 @@ function sendTowToRaceControl(message, author, channel, carsInvolved) {
 }
 
 function sendBFToRaceControl(message, author, channel, carsInvolved) {
-	const raceControlChannel = client.channels.find(item => item.name === process.env.RACE_CONTROL_CHANNEL_NAME)
+	const raceControlChannel = client.channels.find(item => item.name === process.env.BF_CLEAR_CHANNEL_NAME)
 	const richEmbedMessage = new Discord.RichEmbed();
 	richEmbedMessage
 		.setColor("#00FF00")
