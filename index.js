@@ -199,7 +199,7 @@ client.on('message', message => {
 
 		// Sheet notifications
 		else if (message.content.startsWith(`${process.env.PREFIX}sheet`)) {
-			message.channel.send('https://docs.google.com/spreadsheets/d/1OukaYFKTPTvYaM7NhGhTvHcPcjc7gt38T0AGBUSsoVs/edit?usp=sharing');
+			message.channel.send(process.env.SHEET_URL);
 		}
 
 		// Protest
