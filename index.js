@@ -47,7 +47,6 @@ function sendBFToRaceControl(message, author, channel, carsInvolved, lap, reason
 		.setTimestamp();
 	raceControlChannel.send(`@here: new black flag clear request from #${channel}`, richEmbedMessage);
 	message.reply('Clear successfully requested');
-
 }
 
 function confirmProtestSubmitted(message, sourceCar, carsInvolved, timeStamp, reason) {
@@ -129,13 +128,13 @@ function initiateBF(message) {
 													reason = collected.first().content;
 													sendBFToRaceControl(message, initiator, channel, carInvolved, lap, reason);
 												})
-												.catch(collected => returnErrorMessage(message));
+												// .catch(collected => returnErrorMessage(message));
 										})
 								})
-								.catch(collected => returnErrorMessage(message));
+								// .catch(collected => returnErrorMessage(message));
 						})
 				})
-				.catch(collected => returnErrorMessage(message));
+				// .catch(collected => returnErrorMessage(message));
 		})
 }
 
@@ -189,16 +188,16 @@ function initiateProtest(message) {
 																	sendProtestToRaceControl(initiator, channel, sourceCar, carsInvolved, timeStamp, reason);
 																	confirmProtestSubmitted(message, sourceCar, carsInvolved, timeStamp, reason);
 																})
-																// .catch(collected => returnErrorMessage(message));
+																.catch(collected => returnErrorMessage(message));
 														})
 												})
-												// .catch(collected => returnErrorMessage(message));
+												.catch(collected => returnErrorMessage(message));
 										})
 								})
-								// .catch(collected => returnErrorMessage(message));
+								.catch(collected => returnErrorMessage(message));
 							})
 					})
-					// .catch(collected => returnErrorMessage(message));
+					.catch(collected => returnErrorMessage(message));
 		});
 }
 
