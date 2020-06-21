@@ -128,13 +128,13 @@ function initiateBF(message) {
 													reason = collected.first().content;
 													sendBFToRaceControl(message, initiator, channel, carInvolved, lap, reason);
 												})
-												// .catch(collected => returnErrorMessage(message));
+												.catch(collected => returnErrorMessage(message));
 										})
 								})
-								// .catch(collected => returnErrorMessage(message));
+								.catch(collected => returnErrorMessage(message));
 						})
 				})
-				// .catch(collected => returnErrorMessage(message));
+				.catch(collected => returnErrorMessage(message));
 		})
 }
 
