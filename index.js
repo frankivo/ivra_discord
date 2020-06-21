@@ -127,7 +127,7 @@ function initiateBF(message) {
 												.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
 												.then(collected => {
 													reason = collected.first().content;
-													// sendBFToRaceControl(message, initiator, channel, carInvolved, lap, reason);
+													sendBFToRaceControl(message, initiator, channel, carInvolved, lap, reason);
 												})
 												.catch(collected => returnErrorMessage(message));
 										})
