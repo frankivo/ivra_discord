@@ -33,7 +33,7 @@ function sendTowToRaceControl(message, author, channel, carsInvolved) {
 
 }
 
-function sendBFToRaceControl(message, author, channel, carsInvolved) {
+function sendBFToRaceControl(message, author, channel, carsInvolved, lap, reason) {
 	const raceControlChannel = client.channels.find(item => item.name === process.env.BF_CLEAR_CHANNEL_NAME)
 	const richEmbedMessage = new Discord.RichEmbed();
 	richEmbedMessage
@@ -41,6 +41,8 @@ function sendBFToRaceControl(message, author, channel, carsInvolved) {
 		.setTitle("New Black Flag Clear Request")
 		.setDescription(`${author} is requesting a cleared black flag #${channel}`)
 		.addField("Car involved", carsInvolved, true)
+		.addField("Lap", lap, true)
+		.addField("Reason for BF", reason, true)
 		.addBlankField()
 		.setTimestamp();
 	raceControlChannel.send(`@here: new black flag clear request from #${channel}`, richEmbedMessage);
@@ -53,7 +55,7 @@ function confirmProtestSubmitted(message, sourceCar, carsInvolved, timeStamp, re
 	protestConfirmation
 		.setColor("#E56A02")
 		.setTitle("Protest successfully submitted")
-		.setDescription(`Thank you ${message.author}, your protest is successfully submitted. Please check the protest sheet for the status of your protest.  Thank you to Neil Hekkens and NEO for allowing us to us the protest portion of the Race Control Bot.`)
+		.setDescription(`Thank you ${message.author}, your protest is successfully submitted. Please check the protest sheet for the status of your protest.  Thank you to Niel Hekkens and NEO for allowing us to use the protest portion of the Race Control Bot.`)
 		.addBlankField()
 		.addField("Protest details", "Below you can find the information you submitted:")
 		.addField("Origin Car", sourceCar, true)
@@ -103,7 +105,33 @@ function initiateBF(message) {
 				.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
 				.then(collected => {
 					carInvolved = collected.first().content;
-					sendBFToRaceControl(message, initiator, channel, carInvolved);
+
+					message.channel
+						.send("What lap did you get the black flag?")
+						.then(collected => {
+							const filter = m => message.author.id === m.author.id;
+
+							message.channel
+								.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
+								.then(collected => {
+									lap = collected.first().content;
+
+									message.channel
+										.send("What is the reason for the black flag?")
+										.then(() => {
+											const filter = m => message.author.id === m.author.id;
+
+											message.channel
+												.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
+												.then(collected => {
+													reason = collected.first().content;
+													sendBFToRaceControl(message, initiator, channel, carInvolved, lap, reason);
+												})
+												.catch(collected => returnErrorMessage(message));
+										})
+								})
+								.catch(collected => returnErrorMessage(message));
+						})
 				})
 				.catch(collected => returnErrorMessage(message));
 		})
