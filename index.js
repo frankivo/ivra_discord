@@ -95,6 +95,8 @@ function initiateBF(message) {
 	let initiator = message.author;
 	let channel = message.channel.name;
 	let carsInvolved = undefined;
+	let reason = undefined;
+	let lap = undefined;
 
 	message.channel
 		.send("Please answer the following questions: \n Which car number is requesting a cleared black flag?")
@@ -108,7 +110,7 @@ function initiateBF(message) {
 
 					message.channel
 						.send("What lap did you get the black flag?")
-						.then(collected => {
+						.then(() => {
 							const filter = m => message.author.id === m.author.id;
 
 							message.channel
