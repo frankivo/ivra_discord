@@ -189,16 +189,16 @@ function initiateProtest(message) {
 																	sendProtestToRaceControl(initiator, channel, sourceCar, carsInvolved, timeStamp, reason);
 																	confirmProtestSubmitted(message, sourceCar, carsInvolved, timeStamp, reason);
 																})
-																.catch(collected => returnErrorMessage(message));
+																// .catch(collected => returnErrorMessage(message));
 														})
 												})
-												.catch(collected => returnErrorMessage(message));
+												// .catch(collected => returnErrorMessage(message));
 										})
 								})
-								.catch(collected => returnErrorMessage(message));
+								// .catch(collected => returnErrorMessage(message));
 							})
 					})
-					.catch(collected => returnErrorMessage(message));
+					// .catch(collected => returnErrorMessage(message));
 		});
 }
 
