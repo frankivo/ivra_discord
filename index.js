@@ -30,7 +30,12 @@ function sendTowToRaceControl(message, author, channel, carsInvolved) {
 		.setTimestamp();
 	towChannel.send(`@here: new tow request from #${channel}`, richEmbedMessage);
 	message.reply('Tow successfully requested.  Please wait for RC confirmation before you tow back to the pits');
+}
 
+function sendMessageToRaceControl(message, author, channel, userMessage) {
+	const raceControlChannel = client.channels.find(item => item.name === process.env.RACE_CONTROL_CHANNEL_NAME)
+	raceControlChannel.send(`@here ${message.author} sent a message: \n\n${userMessage.content}`);
+	message.reply('Your message has been sent to Race Control. They will reach out to you shortly if needed.');
 }
 
 function sendBFToRaceControl(message, author, channel, carsInvolved, lap, reason) {
@@ -81,10 +86,30 @@ function initiateTow(message) {
 			const filter = m => message.author.id === m.author.id;
 
 			message.channel
-				.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
+				.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })
 				.then(collected => {
 					carInvolved = collected.first().content;
 					sendTowToRaceControl(message, initiator, channel, carInvolved);
+				})
+				.catch(collected => returnErrorMessage(message));
+		})
+}
+
+function initiateMessageToRc(message) {
+	let initiator = message.author;
+	let channel = message.channel.name;
+	let userMessage = undefined;
+
+	message.channel
+		.send("What is the message?")
+		.then(() => {
+			const filter = m => message.author.id === m.author.id;
+
+			message.channel
+				.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })
+				.then(collected => {
+					userMessage = collected.first().content;
+					sendMessageToRaceControl(message, initiator, channel, userMessage);
 				})
 				.catch(collected => returnErrorMessage(message));
 		})
@@ -103,7 +128,7 @@ function initiateBF(message) {
 			const filter = m => message.author.id === m.author.id;
 
 			message.channel
-				.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
+				.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })
 				.then(collected => {
 					carInvolved = collected.first().content;
 
@@ -113,7 +138,7 @@ function initiateBF(message) {
 							const filter = m => message.author.id === m.author.id;
 
 							message.channel
-								.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
+								.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })
 								.then(collected => {
 									lap = collected.first().content;
 
@@ -123,7 +148,7 @@ function initiateBF(message) {
 											const filter = m => message.author.id === m.author.id;
 
 											message.channel
-												.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
+												.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })
 												.then(collected => {
 													reason = collected.first().content;
 													sendBFToRaceControl(message, initiator, channel, carInvolved, lap, reason);
@@ -152,7 +177,7 @@ function initiateProtest(message) {
 			const filter = m => message.author.id === m.author.id;
 
 			message.channel
-				.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
+				.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })
 				.then(collected => {
 					sourceCar = collected.first().content;
 
@@ -162,7 +187,7 @@ function initiateProtest(message) {
 							const filter = m => message.author.id === m.author.id;
 
 							message.channel
-								.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
+								.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })
 								.then(collected => {
 									carsInvolved = collected.first().content;
 
@@ -172,7 +197,7 @@ function initiateProtest(message) {
 											const filter = m => message.author.id === m.author.id;
 
 											message.channel
-												.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
+												.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })
 												.then(collected => {
 													timeStamp = collected.first().content;
 
@@ -182,7 +207,7 @@ function initiateProtest(message) {
 															const filter = m => message.author.id === m.author.id;
 
 															message.channel
-																.awaitMessages(filter, { max: 1, time: 60000, errors: ["time"] })
+																.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })
 																.then(collected => {
 																	reason = collected.first().content;
 																	sendProtestToRaceControl(initiator, channel, sourceCar, carsInvolved, timeStamp, reason);
@@ -211,7 +236,7 @@ client.on('message', message => {
 
 		if (message.content.startsWith(`${process.env.PREFIX}help`)) {
 			message.channel.send(`Here is a list of commands for you to use:
-\t\`!rc [message]\` - Use if you need to talk with Race Control.
+\t\`!rc\` - Use if you need to talk with Race Control.
 \t\`!help\` - Use to bring up a list of commands.
 \t\`!sheet\` - Use to bring up the Race Control Decision Sheet link.
 \t\`!protest\` - Use to log a new protest.
@@ -221,9 +246,7 @@ client.on('message', message => {
 
 		// Race Control notifications
 		else if (message.content.startsWith(`${process.env.PREFIX}rc`)) {
-			const raceControlChannel = client.channels.find(item => item.name === process.env.RACE_CONTROL_CHANNEL_NAME)
-			raceControlChannel.send(`@here ${message.author} sent a message: \n\n${message.content}`);
-			message.channel.send('Your message has been sent to Race Control. They will reach out to you shortly if needed.');
+			initiateMessageToRc(message)
 		}
 
 		// Sheet notifications
