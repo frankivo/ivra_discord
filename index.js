@@ -34,7 +34,7 @@ function sendTowToRaceControl(message, author, channel, carsInvolved) {
 
 function sendMessageToRaceControl(message, author, channel, userMessage) {
 	const raceControlChannel = client.channels.find(item => item.name === process.env.RACE_CONTROL_CHANNEL_NAME)
-	raceControlChannel.send(`@here ${message.author} sent a message: \n\n${userMessage.content}`);
+	raceControlChannel.send(`@here ${message.author} sent a message: \n\n${userMessage}`);
 	message.reply('Your message has been sent to Race Control. They will reach out to you shortly if needed.');
 }
 
