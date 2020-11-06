@@ -235,7 +235,7 @@ client.on('ready', () => {
 
 client.on('message', message => {
 
-	console.log(util.inspect(message, {showHidden: false, depth: null}))
+	console.log(util.inspect(message.roles, {showHidden: false, depth: null}))
 
 
 	if (message.content.startsWith(`${process.env.PREFIX}`)) {
