@@ -1,4 +1,6 @@
 const Discord = require('discord.js');
+const util = require('util')
+
 const client = new Discord.Client();
 
 function sendProtestToRaceControl(author, channel, sourceCar, carsInvolved, timeStamp, reason) {
@@ -232,6 +234,10 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
+
+	console.log(util.inspect(message, {showHidden: false, depth: null}))
+
+
 	if (message.content.startsWith(`${process.env.PREFIX}`)) {
 
 		if (message.content.startsWith(`${process.env.PREFIX}help`)) {
