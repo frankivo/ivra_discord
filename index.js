@@ -235,7 +235,7 @@ client.on('ready', () => {
 
 client.on('message', message => {
 
-	console.log(util.inspect(message.member, {showHidden: false, depth: null}))
+	console.log(util.inspect(message, false, null, true))
 
 
 	if (message.content.startsWith(`${process.env.PREFIX}`)) {
