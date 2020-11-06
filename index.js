@@ -235,7 +235,7 @@ client.on('ready', () => {
 
 client.on('message', message => {
 
-	console.log(util.inspect(message, false, null, true))
+	// console.log(util.inspect(message, false, null, true))
 
 
 	if (message.content.startsWith(`${process.env.PREFIX}`)) {
@@ -276,7 +276,7 @@ client.on('message', message => {
 		}
 
 		// Team text notifications by car number(e.g !289)
-		else if (message.member.roles.find("name", process.env.RC_ROLE_NAME)) {
+		else if (message.content.startsWith(`${process.env.PREFIX}team`)) {
 			const carNumber = message.content.match(/\d+/)[0];
 			const voiceChannel = client.channels.find(item => item.name.match(/\d+/) && item.name.match(/\d+/)[0] === carNumber);
 
