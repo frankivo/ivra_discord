@@ -222,9 +222,9 @@ function initiateProtest(message) {
 										})
 								})
 								.catch(collected => returnErrorMessage(message));
-							})
-					})
-					.catch(collected => returnErrorMessage(message));
+						})
+				})
+				.catch(collected => returnErrorMessage(message));
 		});
 }
 
@@ -234,12 +234,7 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
-
-	// console.log(util.inspect(message, false, null, true))
-
-
 	if (message.content.startsWith(`${process.env.PREFIX}`)) {
-
 		if (message.content.startsWith(`${process.env.PREFIX}help`)) {
 			message.channel.send(`Here is a list of commands for you to use:
 \t\`!rc\` - Use if you need to talk with Race Control.
@@ -278,15 +273,20 @@ client.on('message', message => {
 		// Team text notifications by car number(e.g !289)
 		else if (message.content.startsWith(`${process.env.PREFIX}team`)) {
 			const carNumber = message.content.match(/\d+/)[0];
-			const voiceChannel = client.channels.find(item => item.name.match(/\d+/) && item.name.match(/\d+/)[0] === carNumber);
+			const channelName = `team${carNumber}`
 
-			if (voiceChannel === null) {
-				message.channel.send(`No text channel found for car #${carNumber}`);
-			} else {
-				const categoryId = voiceChannel.parentID;
-				const textChannel = client.channels.find(item => item.parentID === categoryId && item.name === 'text');
-				textChannel.send((`Race Control sent a message: \n\n${message.content}`))
+			const textChannel = client.channels.find(c => c.name === channelName)
+
+			if (textChannel === null) {
+				message.channel.send(`No channel found for: ${carNumber}`)
+				return
 			}
+
+			const pos = message.content.indexOf(carNumber)
+			const siz = ("" + carNumber).length
+			const newText = message.content.substr(pos + siz)
+			
+			textChannel.send(`Race Control sent a message: \n\n${newText}`)
 		}
 	}
 });
