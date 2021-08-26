@@ -1,0 +1,22 @@
+name: Build docker image
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Docker Login
+      uses: docker/login-action@v1
+      with:
+        username: oosterhuisf
+        password: ${{ secrets.DOCKERHUB }}
+
+    - name: Build
+      run: docker build -t oosterhuisf/ivra_discord
