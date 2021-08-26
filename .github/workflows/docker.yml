@@ -19,4 +19,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB }}
 
     - name: Build
-      run: docker build -t oosterhuisf/ivra_discord
+      run: docker build -t oosterhuisf/ivra_discord:latest .
+      
+    - name: Push
+      run: docker push oosterhuisf/ivra_discord:latest
