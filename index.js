@@ -272,21 +272,18 @@ client.on('message', message => {
 
 		// Team text notifications by car number(e.g !289)
 		else if (message.content.startsWith(`${process.env.PREFIX}team`)) {
-			const carNumber = message.content.match(/\d+/)[0];
-			const channelName = `team${carNumber}`
+			const teamName = message.content.split(" ")[1];
+			const pos = message.content.split(" ", "2").join(" ").length;
+			const msg = message.content.substr(pos);
 
-			const textChannel = client.channels.find(c => c.name === channelName)
+			const textChannel = client.channels.find(c => c.name === teamName)
 
 			if (textChannel === null) {
-				message.channel.send(`No channel found for: ${carNumber}`)
+				message.channel.send(`No channel found for: ${teamName}`)
 				return
 			}
-
-			const pos = message.content.indexOf(carNumber)
-			const siz = ("" + carNumber).length
-			const newText = message.content.substr(pos + siz)
 			
-			textChannel.send(`Race Control sent a message: \n\n${newText}`)
+			textChannel.send(`Race Control sent a message: \n\n${msg}`)
 		}
 	}
 });
