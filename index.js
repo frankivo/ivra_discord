@@ -1,5 +1,4 @@
 const Discord = require('discord.js');
-const util = require('util')
 
 const client = new Discord.Client();
 
@@ -80,7 +79,6 @@ function returnErrorMessage(message) {
 function initiateTow(message) {
 	let initiator = message.author;
 	let channel = message.channel.name;
-	let carsInvolved = undefined;
 
 	message.channel
 		.send("Please answer the following questions: \n Which car number is requesting tow?")
@@ -93,7 +91,7 @@ function initiateTow(message) {
 					carInvolved = collected.first().content;
 					sendTowToRaceControl(message, initiator, channel, carInvolved);
 				})
-				.catch(collected => returnErrorMessage(message));
+				.catch(() => returnErrorMessage(message));
 		})
 }
 
@@ -113,14 +111,30 @@ function initiateMessageToRc(message) {
 					userMessage = collected.first().content;
 					sendMessageToRaceControl(message, initiator, channel, userMessage);
 				})
-				.catch(collected => returnErrorMessage(message));
+				.catch(() => returnErrorMessage(message));
 		})
+}
+
+function served(message) {
+	let incident = undefined;
+
+	message.channel
+		.send("Please enter the incident no. you received the penalty for.")
+		.then(() => {
+			const filter = m => message.author.id === m.author.id;
+
+			message.channel
+				.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })
+				.then(collected => {
+					
+					message.channel.send("Ok");
+				}).catch(() => returnErrorMessage(message));
+		}).catch(() => returnErrorMessage(message));
 }
 
 function initiateBF(message) {
 	let initiator = message.author;
 	let channel = message.channel.name;
-	let carsInvolved = undefined;
 	let reason = undefined;
 	let lap = undefined;
 
@@ -132,8 +146,6 @@ function initiateBF(message) {
 			message.channel
 				.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })
 				.then(collected => {
-					carInvolved = collected.first().content;
-
 					message.channel
 						.send("What lap did you get the black flag?")
 						.then(() => {
@@ -155,13 +167,13 @@ function initiateBF(message) {
 													reason = collected.first().content;
 													sendBFToRaceControl(message, initiator, channel, carInvolved, lap, reason);
 												})
-												.catch(collected => returnErrorMessage(message));
+												.catch(() => returnErrorMessage(message));
 										})
 								})
-								.catch(collected => returnErrorMessage(message));
+								.catch(() => returnErrorMessage(message));
 						})
 				})
-				.catch(collected => returnErrorMessage(message));
+				.catch(() => returnErrorMessage(message));
 		})
 }
 
@@ -215,16 +227,16 @@ function initiateProtest(message) {
 																	sendProtestToRaceControl(initiator, channel, sourceCar, carsInvolved, timeStamp, reason);
 																	confirmProtestSubmitted(message, sourceCar, carsInvolved, timeStamp, reason);
 																})
-																.catch(collected => returnErrorMessage(message));
+																.catch(() => returnErrorMessage(message));
 														})
 												})
-												.catch(collected => returnErrorMessage(message));
+												.catch(() => returnErrorMessage(message));
 										})
 								})
-								.catch(collected => returnErrorMessage(message));
+								.catch(() => returnErrorMessage(message));
 						})
 				})
-				.catch(collected => returnErrorMessage(message));
+				.catch(() => returnErrorMessage(message));
 		});
 }
 
@@ -248,6 +260,10 @@ client.on('message', message => {
 		// Race Control notifications
 		else if (message.content.startsWith(`${process.env.PREFIX}rc`)) {
 			initiateMessageToRc(message)
+		}
+
+		else if (message.content.startsWith(`${process.env.PREFIX}served`)) {
+			served(message)
 		}
 
 		// Sheet notifications
