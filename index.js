@@ -151,7 +151,6 @@ function served(message) {
 								.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })
 								.then(collected => {
 									lap = collected.first().content;
-									//message.channel.send("in: " + incident + "\n lap: " + lap)
 									confirmServedSubmitted(message, incident, lap);
 									sendMessageToRaceControl(message, "x", "x", message.channel.name + " served their penalty");
 								}).catch(() => returnErrorMessage(message));
