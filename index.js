@@ -60,13 +60,28 @@ function confirmProtestSubmitted(message, sourceCar, carsInvolved, timeStamp, re
 	protestConfirmation
 		.setColor("#E56A02")
 		.setTitle("Protest successfully submitted")
-		.setDescription(`Thank you ${message.author}, your protest is successfully submitted. Please check the protest sheet for the status of your protest.  Thank you to Niel Hekkens and NEO for allowing us to use the protest portion of the Race Control Bot.`)
+		.setDescription(`Thank you ${message.author}, your protest is successfully submitted. Please check the protest sheet for the status of your protest.`)
 		.addBlankField()
 		.addField("Protest details", "Below you can find the information you submitted:")
 		.addField("Origin Car", sourceCar, true)
 		.addField("Cars involved", carsInvolved, true)
 		.addField("Timestamp", timeStamp, true)
 		.addField("Description", reason)
+		.setTimestamp();
+
+	message.reply(protestConfirmation);
+}
+
+function confirmServedSubmitted(message, incident, lap) {
+	const protestConfirmation = new Discord.RichEmbed();
+	protestConfirmation
+		.setColor("#E56A02")
+		.setTitle("Notification successfully submitted")
+		.setDescription(`Thank you ${message.author}, we will confirm your notification shortly. Please check the race control sheet for the status of your penalty.`)
+		.addBlankField()
+		.addField("Notification details", "Below you can find the information you submitted:")
+		.addField("Incident number", incident, true)
+		.addField("Lap number", lap, true)
 		.setTimestamp();
 
 	message.reply(protestConfirmation);
@@ -120,7 +135,7 @@ function served(message) {
 	let lap = undefined;
 
 	message.channel
-		.send("Please enter the incident no. you received the penalty for.")
+		.send("Please enter the incident number you received the penalty for.")
 		.then(() => {
 			const filter = m => message.author.id === m.author.id;
 
@@ -136,8 +151,9 @@ function served(message) {
 								.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })
 								.then(collected => {
 									lap = collected.first().content;
-									message.channel.send("in: " + incident + "\n lap: " + lap)
-
+									//message.channel.send("in: " + incident + "\n lap: " + lap)
+									confirmServedSubmitted(message, incident, lap);
+									sendMessageToRaceControl(message, "x", "x", message.channel.name + " served their penalty");
 								}).catch(() => returnErrorMessage(message));
 						}).catch(() => returnErrorMessage(message));
 				}).catch(() => returnErrorMessage(message));
