@@ -117,6 +117,7 @@ function initiateMessageToRc(message) {
 
 function served(message) {
 	let incident = undefined;
+	let lap = undefined;
 
 	message.channel
 		.send("Please enter the incident no. you received the penalty for.")
@@ -126,8 +127,19 @@ function served(message) {
 			message.channel
 				.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })
 				.then(collected => {
+					incident = collected.first().content;
 					
-					message.channel.send("Ok");
+					message.channel
+						.send("Please provide the lap number when you served the penalty.")
+						.then(() => {
+							message.channel
+								.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })
+								.then(collected => {
+									lap = collected.first().content;
+									message.channel.send("in: " + incident + "\n lap: " + lap)
+
+								}).catch(() => returnErrorMessage(message));
+						}).catch(() => returnErrorMessage(message));
 				}).catch(() => returnErrorMessage(message));
 		}).catch(() => returnErrorMessage(message));
 }
@@ -145,7 +157,7 @@ function initiateBF(message) {
 
 			message.channel
 				.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })
-				.then(collected => {
+				.then(() => {
 					message.channel
 						.send("What lap did you get the black flag?")
 						.then(() => {
